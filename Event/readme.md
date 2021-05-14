@@ -1,6 +1,6 @@
 Very simple and convinient global, class-based event system.
 
-```
+```cs
 public class MyEvent : IEvent {}
 public class DeathEvent : IEvent {
     public Actor Player;

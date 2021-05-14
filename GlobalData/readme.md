@@ -1,6 +1,6 @@
 Very simple and convinient global ScriptableObject singleton system.
 
-```
+```cs
 public class SomeSystemOrData : GlobalData<SomeSystemOrData> {
     public int Data;
 }
