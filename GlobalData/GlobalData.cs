@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.IO;
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.AddressableAssets;
 using UnityEditor.AddressableAssets.Settings;
+#endif
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -15,6 +17,10 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 
     static string address {
         get => $"GlobalData/{typeof(T).Name}";
+    }
+
+    static string assetPath {
+        get => $"Assets/GlobalData/{typeof(T).Name}.asset";
     }
 
     public static T Instance {
@@ -31,22 +37,9 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
                     Directory.CreateDirectory(dirPath);
                 }
 
-                var path = $"Assets/GlobalData/{typeof(T).Name}.asset";
-                instance = AssetDatabase.LoadAssetAtPath<T>(path);
-
+                instance = AssetDatabase.LoadAssetAtPath<T>(assetPath);
                 if (instance == null) {
-                    var newInstance = ScriptableObject.CreateInstance<T>();
-
-                    AssetDatabase.CreateAsset(newInstance, path);
-                    var guid = AssetDatabase.AssetPathToGUID(path);
-
-                    var settings = AddressableAssetSettingsDefaultObject.Settings;
-                    var entry = settings.CreateOrMoveEntry(guid, settings.DefaultGroup, postEvent: false);
-                    entry.SetAddress(address);
-
-                    settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, new List<AddressableAssetEntry>() { entry }, true);
-
-                    instance = newInstance;
+                    instance = CreateAsset();
                 }
             }
 #endif
@@ -54,10 +47,33 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
         }
     }
 
-    public static AsyncOperationHandle<T> SetupInstance() {
+#if UNITY_EDITOR
+    static T CreateAsset() {
+        var newInstance = ScriptableObject.CreateInstance<T>();
+
+        AssetDatabase.CreateAsset(newInstance, assetPath);
+        var guid = AssetDatabase.AssetPathToGUID(assetPath);
+
+        var settings = AddressableAssetSettingsDefaultObject.Settings;
+        var entry = settings.CreateOrMoveEntry(guid, settings.DefaultGroup, postEvent: false);
+        entry.SetAddress(address);
+
+        settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, new List<AddressableAssetEntry>() { entry }, true);
+
+        return newInstance;
+    }
+#endif
+
+    public static AsyncOperationHandle<T> LoadInstance() {
         var op = Addressables.LoadAssetAsync<T>(address);
         op.Completed += ctx => {
             instance = ctx.Result;
+            Debug.Log($"Loaded {typeof(T).Name}");
+#if UNITY_EDITOR
+            if (ctx.Status == AsyncOperationStatus.Failed) {
+                instance = CreateAsset();
+            }
+#endif
         };
         return op;
     }

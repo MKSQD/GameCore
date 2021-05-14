@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -19,12 +20,16 @@ public class GlobalDataEditor : EditorWindow {
 
             typesScrollPos = GUILayout.BeginScrollView(typesScrollPos, false, true, GUILayout.Width(200));
             {
+                var activeButtonStyle = new GUIStyle(GUI.skin.button);
+                activeButtonStyle.fontStyle = FontStyle.Bold;
+
                 for (int i = 0; i < types.Count; ++i) {
                     var type = types[i];
-                    if (type.IsAbstract || type.IsGenericType)
+                    if (!IsTypeValid(type))
                         continue;
 
-                    if (GUILayout.Button(type.ToString())) {
+                    var style = i != selectedIdx ? GUI.skin.button : activeButtonStyle;
+                    if (GUILayout.Button(type.ToString(), style)) {
                         selectedIdx = i;
                         break;
                     }
@@ -33,17 +38,21 @@ public class GlobalDataEditor : EditorWindow {
             GUILayout.EndScrollView();
 
             //
-            var selectedType = types[selectedIdx];
-            var instance = selectedType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy);
-            var inst = (ScriptableObject)instance.GetValue(null);
+            if (selectedIdx < types.Count && IsTypeValid(types[selectedIdx])) {
+                inspectorScrollPos = GUILayout.BeginScrollView(inspectorScrollPos);
+                {
+                    var selectedType = types[selectedIdx];
+                    var instance = selectedType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy);
+                    var inst = (ScriptableObject)instance.GetValue(null);
 
-            inspectorScrollPos = GUILayout.BeginScrollView(inspectorScrollPos);
-            {
-                var editor = Editor.CreateEditor(inst);
-                editor.DrawDefaultInspector();
+                    var editor = Editor.CreateEditor(inst);
+                    editor.DrawDefaultInspector();
+                }
+                GUILayout.EndScrollView();
             }
-            GUILayout.EndScrollView();
         }
         GUILayout.EndHorizontal();
     }
+
+    static bool IsTypeValid(Type type) => !type.IsAbstract && !type.IsGenericType;
 }
