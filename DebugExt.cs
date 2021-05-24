@@ -55,7 +55,9 @@ public class DebugExt : MonoBehaviour {
     }
 
 
+#if UNITY_EDITOR
     static bool paused = false;
+#endif
 
     public static void DrawRect(Vector3 from, Vector3 to, Color color, float duration = 0) {
         EnsureInstance();

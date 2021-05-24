@@ -18,7 +18,7 @@ public class GlobalDataEditor : EditorWindow {
         {
             var types = TypeCache.GetTypesDerivedFrom<IGlobalData>();
 
-            typesScrollPos = GUILayout.BeginScrollView(typesScrollPos, false, true, GUILayout.Width(200));
+            typesScrollPos = GUILayout.BeginScrollView(typesScrollPos, GUILayout.Width(260));
             {
                 var activeButtonStyle = new GUIStyle(GUI.skin.button);
                 activeButtonStyle.fontStyle = FontStyle.Bold;

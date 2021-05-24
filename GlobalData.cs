@@ -14,14 +14,8 @@ public interface IGlobalData {
 
 public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableObject {
     static T instance;
-
-    static string address {
-        get => $"GlobalData/{typeof(T).Name}";
-    }
-
-    static string assetPath {
-        get => $"Assets/GlobalData/{typeof(T).Name}.asset";
-    }
+    static string address => $"GlobalData/{typeof(T).Name}";
+    static string assetPath => $"Assets/GlobalData/{typeof(T).Name}.asset";
 
     public static T Instance {
         get {
@@ -68,7 +62,7 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
         var op = Addressables.LoadAssetAsync<T>(address);
         op.Completed += ctx => {
             instance = ctx.Result;
-            Debug.Log($"Loaded {typeof(T).Name}");
+            Debug.Log($"Loaded <i>{typeof(T).Name}</i>");
 #if UNITY_EDITOR
             if (ctx.Status == AsyncOperationStatus.Failed) {
                 instance = CreateAsset();
