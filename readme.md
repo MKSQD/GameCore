@@ -38,7 +38,7 @@ void Start() {
 }
 
 IEnumerator LoadGame() {
-    yield return SomeSystemOrData.LoadInstance(); // Load data via Addressibles
+    yield return SomeSystemOrData.LoadInstance(); // Load data via Addressables
     
     ...
 
