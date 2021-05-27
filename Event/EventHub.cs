@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public static class EventHub<T> where T : IEvent {
     static List<Action<T>> listeners = new List<Action<T>>();
@@ -15,7 +16,11 @@ public static class EventHub<T> where T : IEvent {
     public static void Emit(T evt) {
         for (int i = 0; i < listeners.Count; ++i) {
             var listener = listeners[i];
-            listener(evt);
+            try {
+                listener(evt);
+            } catch (Exception e) {
+                Debug.LogException(e);
+            }
         }
     }
 }
