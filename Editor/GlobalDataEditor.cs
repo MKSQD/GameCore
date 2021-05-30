@@ -28,8 +28,14 @@ public class GlobalDataEditor : EditorWindow {
                     if (!IsTypeValid(type))
                         continue;
 
+                    var inst = GetInstanceByType(type);
+
                     var style = i != selectedIdx ? GUI.skin.button : activeButtonStyle;
-                    if (GUILayout.Button(type.ToString(), style)) {
+                    var text = type.ToString();
+                    if (EditorUtility.IsDirty(inst)) {
+                        text += "*";
+                    }
+                    if (GUILayout.Button(text, style)) {
                         selectedIdx = i;
                         break;
                     }
@@ -42,8 +48,7 @@ public class GlobalDataEditor : EditorWindow {
                 inspectorScrollPos = GUILayout.BeginScrollView(inspectorScrollPos);
                 {
                     var selectedType = types[selectedIdx];
-                    var instance = selectedType.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy);
-                    var inst = (ScriptableObject)instance.GetValue(null);
+                    var inst = GetInstanceByType(selectedType);
 
                     var editor = Editor.CreateEditor(inst);
                     editor.DrawDefaultInspector();
@@ -52,6 +57,11 @@ public class GlobalDataEditor : EditorWindow {
             }
         }
         GUILayout.EndHorizontal();
+    }
+
+    ScriptableObject GetInstanceByType(Type type) {
+        var instance = type.GetProperty("Instance", BindingFlags.Static | BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.FlattenHierarchy);
+        return (ScriptableObject)instance.GetValue(null);
     }
 
     static bool IsTypeValid(Type type) => !type.IsAbstract && !type.IsGenericType;
