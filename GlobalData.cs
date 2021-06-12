@@ -14,8 +14,9 @@ public interface IGlobalData {
 
 public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableObject {
     static T instance;
-    static string address => $"GlobalData/{typeof(T).Name}";
-    static string assetPath => $"Assets/GlobalData/{typeof(T).Name}.asset";
+    public static string Address => $"GlobalData/{typeof(T).Name}";
+    public static string AssetName => $"{typeof(T).Name}.asset";
+    public static string AssetPath => $"Assets/GlobalData/{AssetName}";
 
     public static T Instance {
         get {
@@ -31,7 +32,7 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
                     Directory.CreateDirectory(dirPath);
                 }
 
-                instance = AssetDatabase.LoadAssetAtPath<T>(assetPath);
+                instance = AssetDatabase.LoadAssetAtPath<T>(AssetPath);
                 if (instance == null) {
                     instance = CreateAsset();
                 }
@@ -43,14 +44,21 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 
 #if UNITY_EDITOR
     static T CreateAsset() {
+        if (File.Exists($"{Application.dataPath}/GlobalData/{AssetName}")) {
+            Debug.LogWarning("AssetDatabase.LoadAssetAtPath failed, but file exists. Maybe rebuilding AssetDB?");
+            return null;
+        }
+
+        Debug.Log($"Creating GlobalData at {AssetPath}...");
+
         var newInstance = ScriptableObject.CreateInstance<T>();
 
-        AssetDatabase.CreateAsset(newInstance, assetPath);
-        var guid = AssetDatabase.AssetPathToGUID(assetPath);
+        AssetDatabase.CreateAsset(newInstance, AssetPath);
+        var guid = AssetDatabase.AssetPathToGUID(AssetPath);
 
         var settings = AddressableAssetSettingsDefaultObject.Settings;
         var entry = settings.CreateOrMoveEntry(guid, settings.DefaultGroup, postEvent: false);
-        entry.SetAddress(address);
+        entry.SetAddress(Address);
 
         settings.SetDirty(AddressableAssetSettings.ModificationEvent.EntryMoved, new List<AddressableAssetEntry>() { entry }, true);
 
@@ -59,10 +67,9 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 #endif
 
     public static AsyncOperationHandle<T> LoadInstance() {
-        var op = Addressables.LoadAssetAsync<T>(address);
+        var op = Addressables.LoadAssetAsync<T>(Address);
         op.Completed += ctx => {
             instance = ctx.Result;
-            Debug.Log($"Loaded <i>{typeof(T).Name}</i>");
 #if UNITY_EDITOR
             if (ctx.Status == AsyncOperationStatus.Failed) {
                 instance = CreateAsset();
