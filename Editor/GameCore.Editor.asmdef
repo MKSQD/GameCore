@@ -2,7 +2,8 @@
     "name": "GameCore.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:5f208f2996150a14d83221f382aa4ccd"
+        "GUID:5f208f2996150a14d83221f382aa4ccd",
+        "GUID:478a2357cc57436488a56e564b08d223"
     ],
     "includePlatforms": [
         "Editor"

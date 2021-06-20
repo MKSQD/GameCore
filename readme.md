@@ -1,6 +1,6 @@
 # GameCore
 
-Requires the Addressables package!
+Requires the _Addressables_ and _Editor Coroutines_ packages!
 
 ## Tools
 - Ctrl + G: _Simulate physics for selected GameObjects_
