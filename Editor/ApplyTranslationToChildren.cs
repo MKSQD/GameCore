@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// Move all selected GameObjects to (0,0,0) while their children keep their world positions.
 public static class ApplyTranslationToChildren {
-    [MenuItem("Edit/Apply Translation To Children For Selected #&r", priority = 142)]
+    [MenuItem("Edit/Apply Translation To Children For Selected #&t", priority = 142)]
     static void CreateWizard() {
         foreach (var go in Selection.gameObjects) {
             Apply(go.transform);
