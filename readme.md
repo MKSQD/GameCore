@@ -1,5 +1,7 @@
 # GameCore
 
+Requires the Addressables package!
+
 ## Event
 Very simple and convinient global, class-based event system.
 
