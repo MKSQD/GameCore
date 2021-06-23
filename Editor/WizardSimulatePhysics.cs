@@ -141,15 +141,13 @@ public class WizardSimulatePhysics : ScriptableWizard {
             if (simulatedBodies.All(body => body.Rigidbody.IsSleeping() || !body.IsSelected))
                 break;
 
-            if (i % 10 == 0) {
-                foreach (var body in simulatedBodies) {
-                    if (!body.IsSelected) {
-                        body.Reset();
-                    }
+            foreach (var body in simulatedBodies) {
+                if (!body.IsSelected) {
+                    body.Reset();
                 }
-
-                yield return null;
             }
+
+            yield return null;
         }
         Physics.autoSimulation = true;
 
@@ -165,10 +163,10 @@ public class WizardSimulatePhysics : ScriptableWizard {
         generatedColliders = new List<Collider>();
 
         foreach (var go in initialSelection) {
-            if (go.GetComponent<Rigidbody>() == null) {
+            if (go.GetComponentInChildren<Rigidbody>() == null) {
                 generatedRigidbodies.Add(go.AddComponent<Rigidbody>());
             }
-            if (go.GetComponent<Collider>() == null) {
+            if (go.GetComponentInChildren<Collider>() == null) {
                 generatedColliders.Add(go.AddComponent<BoxCollider>());
             }
         }
