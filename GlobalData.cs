@@ -42,6 +42,8 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
         }
     }
 
+    public static bool HasInstance => instance != null;
+
 #if UNITY_EDITOR
     static T CreateAsset() {
         if (File.Exists($"{Application.dataPath}/GlobalData/{AssetName}")) {
