@@ -6,12 +6,15 @@ using UnityEngine;
 public class GlobalDataEditor : EditorWindow {
     Vector2 typesScrollPos, inspectorScrollPos;
     int selectedIdx;
+    Type lastSelectedType;
+    Editor lastEditor;
 
     [MenuItem("Window/Global Data")]
     static void Init() {
         var window = EditorWindow.GetWindow<GlobalDataEditor>("Global Data");
         window.Show();
     }
+
 
     void OnGUI() {
         GUILayout.BeginHorizontal();
@@ -48,10 +51,13 @@ public class GlobalDataEditor : EditorWindow {
                 inspectorScrollPos = GUILayout.BeginScrollView(inspectorScrollPos);
                 {
                     var selectedType = types[selectedIdx];
-                    var inst = GetInstanceByType(selectedType);
+                    if (selectedType != lastSelectedType) {
+                        lastSelectedType = selectedType;
 
-                    var editor = Editor.CreateEditor(inst);
-                    editor.DrawDefaultInspector();
+                        var inst = GetInstanceByType(selectedType);
+                        lastEditor = Editor.CreateEditor(inst);
+                    }
+                    lastEditor.OnInspectorGUI();
                 }
                 GUILayout.EndScrollView();
             }
