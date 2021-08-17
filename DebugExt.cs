@@ -40,7 +40,7 @@ public class DebugExt : MonoBehaviour {
         instance = FindObjectOfType<DebugExt>();
         if (instance == null) {
             var goOuter = new GameObject("DebugExt Wrapper") {
-                hideFlags = HideFlags.HideInHierarchy
+                hideFlags = HideFlags.HideAndDontSave
             };
 
             var go = new GameObject("DebugExt");
