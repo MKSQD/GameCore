@@ -151,6 +151,17 @@ public class DebugExt : MonoBehaviour {
 
 
 
+    public static void DrawWireCapsule(Vector3 pos0, Vector3 pos1, float radius, Color? color = null, float duration = 0) {
+        for (float f = 0; f < 1; f += 0.2f) {
+            var p = Vector3.Lerp(pos0, pos1, f);
+            DrawWireSphere(p, radius, color, duration);
+        }
+    }
+
+
+
+
+
 #if UNITY_EDITOR
     void OnDrawGizmos() {
         lines2.Clear();
