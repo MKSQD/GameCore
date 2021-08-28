@@ -37,8 +37,12 @@ public class DebugExt : MonoBehaviour {
         if (instance != null)
             return;
 
-        instance = FindObjectOfType<DebugExt>();
+        var wrapper = GameObject.Find("DebugExt Wrapper");
+
+        instance = wrapper?.GetComponentInChildren<DebugExt>();
         if (instance == null) {
+            Destroy(wrapper);
+
             var goOuter = new GameObject("DebugExt Wrapper") {
                 hideFlags = HideFlags.HideAndDontSave
             };
@@ -63,6 +67,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.lines.Count > 300)
             return;
+
         DrawLineImpl(new Vector3(from.x, from.y, from.z), new Vector3(to.x, from.y, from.z), color, duration);
         DrawLineImpl(new Vector3(to.x, from.y, from.z), new Vector3(to.x, to.y, to.z), color, duration);
         DrawLineImpl(new Vector3(to.x, to.y, to.z), new Vector3(from.x, from.y, to.z), color, duration);
@@ -75,6 +80,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.lines.Count > 300)
             return;
+
         DrawLineImpl(from, to, Color.green, 0);
     }
 
@@ -82,6 +88,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.lines.Count > 300)
             return;
+
         DrawLineImpl(from, to, color, 0);
     }
 
@@ -89,6 +96,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.lines.Count > 300)
             return;
+
         DrawLineImpl(from, to, color, duration);
     }
 
@@ -107,6 +115,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.strings.Count > 100)
             return;
+
         DrawTextImpl(pos, text, Color.green, 0);
     }
 
@@ -114,6 +123,7 @@ public class DebugExt : MonoBehaviour {
         EnsureInstance();
         if (instance.strings.Count > 100)
             return;
+
         DrawTextImpl(pos, text, color, 0);
     }
 
@@ -152,7 +162,8 @@ public class DebugExt : MonoBehaviour {
 
 
     public static void DrawWireCapsule(Vector3 pos0, Vector3 pos1, float radius, Color? color = null, float duration = 0) {
-        for (float f = 0; f < 1; f += 0.2f) {
+        var dist = 1 / (0.1f + (pos0 - pos1).magnitude * 2);
+        for (float f = 0; f < 1; f += dist) {
             var p = Vector3.Lerp(pos0, pos1, f);
             DrawWireSphere(p, radius, color, duration);
         }
