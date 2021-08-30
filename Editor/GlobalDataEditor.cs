@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class GlobalDataEditor : EditorWindow {
     Vector2 typesScrollPos, inspectorScrollPos;
-    int selectedIdx;
+    int selectedTypeIdx;
     Type lastSelectedType;
     Editor lastEditor;
 
-    [MenuItem("Window/Global Data")]
+    [MenuItem("Tools/Global Data")]
     static void Init() {
         var window = EditorWindow.GetWindow<GlobalDataEditor>("Global Data");
         window.Show();
@@ -31,31 +31,30 @@ public class GlobalDataEditor : EditorWindow {
                     if (!IsTypeValid(type))
                         continue;
 
-                    var inst = GetInstanceByType(type);
+                    var instance = GetInstanceByType(type);
 
-                    var style = i != selectedIdx ? GUI.skin.button : activeButtonStyle;
+                    var style = i != selectedTypeIdx ? GUI.skin.button : activeButtonStyle;
                     var text = type.ToString();
-                    if (EditorUtility.IsDirty(inst)) {
+                    if (EditorUtility.IsDirty(instance)) {
                         text += "*";
                     }
                     if (GUILayout.Button(text, style)) {
-                        selectedIdx = i;
-                        break;
+                        selectedTypeIdx = i;
                     }
                 }
             }
             GUILayout.EndScrollView();
 
             //
-            if (selectedIdx < types.Count && IsTypeValid(types[selectedIdx])) {
+            if (selectedTypeIdx < types.Count && IsTypeValid(types[selectedTypeIdx])) {
                 inspectorScrollPos = GUILayout.BeginScrollView(inspectorScrollPos);
                 {
-                    var selectedType = types[selectedIdx];
+                    var selectedType = types[selectedTypeIdx];
                     if (selectedType != lastSelectedType) {
                         lastSelectedType = selectedType;
 
-                        var inst = GetInstanceByType(selectedType);
-                        lastEditor = Editor.CreateEditor(inst);
+                        var instance = GetInstanceByType(selectedType);
+                        lastEditor = Editor.CreateEditor(instance);
                     }
                     lastEditor.OnInspectorGUI();
                 }
