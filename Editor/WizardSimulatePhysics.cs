@@ -11,6 +11,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
         public readonly bool IsSelected;
         readonly Vector3 originalPosition;
         readonly Quaternion originalRotation;
+        readonly CollisionDetectionMode previousCollisionDetectionMode;
         readonly Transform transform;
 
         public SimulatedBody(Rigidbody rigidbody, bool selected) {
@@ -19,6 +20,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
             transform = rigidbody.transform;
             originalPosition = rigidbody.position;
             originalRotation = rigidbody.rotation;
+            previousCollisionDetectionMode = rigidbody.collisionDetectionMode;
         }
 
         public void Reset() {
@@ -27,6 +29,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
             if (Rigidbody != null) {
                 Rigidbody.velocity = Vector3.zero;
                 Rigidbody.angularVelocity = Vector3.zero;
+                Rigidbody.collisionDetectionMode = previousCollisionDetectionMode;
             }
         }
     }
@@ -65,7 +68,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
             }
         }
 
-        // Resimulate to allow for proper undo
+        // Reset then set poses for proper undo
         ResetAll();
 
         int i = 0;
@@ -132,6 +135,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
         foreach (var body in simulatedBodies) {
             if (body.IsSelected) {
                 body.Rigidbody.velocity = InitialWorldForce;
+                body.Rigidbody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             }
         }
 
