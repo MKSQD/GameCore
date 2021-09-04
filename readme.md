@@ -35,7 +35,6 @@ Very simple and convinient global ScriptableObject singleton system.
 
 The system enforces uniform semantics for global data and systems. Derive from the class and open the editor at _Window/Global Data_ where all GlobalData<T> derived classes are listed with their editable instances. No need to create the ScriptableObject asset yourself.
 
-
 ```cs
 public class SomeSystemOrData : GlobalData<SomeSystemOrData> {
     public int Data;
@@ -54,4 +53,16 @@ IEnumerator LoadGame() {
 
     Debug.Log($"Data: {SomeSystemOrData.Instance.Data}");
 }
+```
+
+## DebugExt
+Proper debug drawing for Unity. Call from everywhere, nothing to setup, stays on the screen when the game is paused, works in editor and game viewports and is toggable via the Gizmos button. 3d shapes, 3d text, 2d viewport lines.
+
+```cs
+DebugExt.DrawLine
+DebugExt.DrawRect
+DebugExt.DrawText
+DebugExt.DrawWireSphere
+DebugExt.DrawWireCapsule
+DebugExt.DrawViewportLine
 ```
