@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -171,7 +172,48 @@ public class DebugExt : MonoBehaviour {
 
 
 
+    static Material lineMaterial;
+    static void CreateLineMaterial() {
+        if (!lineMaterial) {
+            // Unity has a built-in shader that is useful for drawing
+            // simple colored things.
+            Shader shader = Shader.Find("Hidden/Internal-Colored");
+            lineMaterial = new Material(shader);
+            lineMaterial.hideFlags = HideFlags.HideAndDontSave;
+            // Turn on alpha blending
+            lineMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            lineMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            // Turn backface culling off
+            lineMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
+            // Turn off depth writes
+            lineMaterial.SetInt("_ZWrite", 0);
+        }
+    }
 
+    public static void DrawViewportLine(Vector2 pos0, Vector2 pos1, Color? color = null) {
+        Camera camera = Camera.main;
+        if (camera == null)
+            return;
+
+        instance.StartCoroutine(DrawViewportLineImpl(pos0, pos1, color ?? Color.green));
+    }
+
+    static IEnumerator DrawViewportLineImpl(Vector2 pos0, Vector2 pos1, Color color) {
+        yield return new WaitForEndOfFrame();
+
+        CreateLineMaterial();
+        GL.PushMatrix();
+        lineMaterial.SetPass(0);
+        GL.LoadOrtho();
+        GL.Begin(GL.LINES);
+        GL.Color(color);
+
+        GL.Vertex(pos0);
+        GL.Vertex(pos1);
+
+        GL.End();
+        GL.PopMatrix();
+    }
 
 #if UNITY_EDITOR
     void OnDrawGizmos() {
