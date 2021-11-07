@@ -42,7 +42,7 @@ public class DebugExt : MonoBehaviour {
 
         instance = wrapper?.GetComponentInChildren<DebugExt>();
         if (instance == null) {
-            Destroy(wrapper);
+            DestroyImmediate(wrapper);
 
             var goOuter = new GameObject("DebugExt Wrapper") {
                 hideFlags = HideFlags.HideAndDontSave
