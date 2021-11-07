@@ -64,15 +64,20 @@ public class DebugExt : MonoBehaviour {
     static bool paused = false;
 #endif
 
-    public static void DrawRect(Vector3 from, Vector3 to, Color color, float duration = 0) {
+    public static void DrawRect(Vector3 point, Vector3 normal, Color color, float duration = 0) {
         EnsureInstance();
         if (instance.lines.Count > 300)
             return;
 
-        DrawLineImpl(new Vector3(from.x, from.y, from.z), new Vector3(to.x, from.y, from.z), color, duration);
-        DrawLineImpl(new Vector3(to.x, from.y, from.z), new Vector3(to.x, to.y, to.z), color, duration);
-        DrawLineImpl(new Vector3(to.x, to.y, to.z), new Vector3(from.x, from.y, to.z), color, duration);
-        DrawLineImpl(new Vector3(from.x, from.y, to.z), new Vector3(from.x, from.y, from.z), color, duration);
+        var p0 = point + Vector3.Cross(normal, new Vector3(1, 0, 1));
+        var p1 = point + Vector3.Cross(normal, new Vector3(1, 0, -1));
+        var p2 = point + Vector3.Cross(normal, new Vector3(-1, 0, -1));
+        var p3 = point + Vector3.Cross(normal, new Vector3(-1, 0, 1));
+
+        DrawLineImpl(p0, p1, color, duration);
+        DrawLineImpl(p1, p2, color, duration);
+        DrawLineImpl(p2, p3, color, duration);
+        DrawLineImpl(p3, p0, color, duration);
     }
 
 
