@@ -48,7 +48,7 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 #if UNITY_EDITOR
     static T CreateAsset() {
         if (File.Exists($"{Application.dataPath}/GlobalData/{AssetName}")) {
-            Debug.LogWarning("AssetDatabase.LoadAssetAtPath failed, but file exists. Maybe rebuilding AssetDB?");
+            Debug.LogWarning("AssetDatabase.LoadAssetAtPath failed, but the file exists. Maybe rebuilding AssetDB? Maybe Addressable name was changed (don't do that!)?");
             return null;
         }
 
