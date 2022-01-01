@@ -13,7 +13,7 @@ public static class EventHub<T> where T : IEvent {
         listeners.Remove(listener);
     }
 
-    public static void EmitEmpty() {
+    public static void EmitDefault() {
         for (int i = 0; i < listeners.Count; ++i) {
             var listener = listeners[i];
             try {
