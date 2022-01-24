@@ -7,39 +7,43 @@ public class EventSourceEditor : Editor {
     public override void OnInspectorGUI() {
         var src = (EventSource)target;
 
-        var types = TypeCache.GetTypesDerivedFrom<IEvent>();
-
-        var currentIdx = 0;
-
-        if (src.evt != null) {
-            var currentType = src.evt.GetType();
-
-
-            for (int i = 0; i < types.Count; ++i) {
-                if (types[i] == currentType) {
-                    currentIdx = i + 1;
-                    break;
-                }
-            }
-
-            DrawDefaultInspector();
-        }
+        DrawDefaultInspector();
 
         // EventType Popup
+        var types = TypeCache.GetTypesDerivedFrom<IEvent>();
         var typesStr = new List<string>(types.Count + 1);
+        var typesIndices = new List<int>(types.Count + 1);
         typesStr.Add("None");
+        typesIndices.Add(-1);
+
+        var currentPopupIdx = 0;
+        var currentType = src.evt?.GetType();
         for (int i = 0; i < types.Count; ++i) {
+            if (types[i].GetConstructor(Type.EmptyTypes) == null)
+                continue; // This event requires ctor arguments and can't be assigned via editor
+
+            if (types[i] == currentType) {
+                currentPopupIdx = typesIndices.Count;
+            }
+
             typesStr.Add(types[i].ToString());
+            typesIndices.Add(i);
         }
 
         EditorGUILayout.BeginHorizontal();
 
         EditorGUILayout.LabelField("Event Type");
-        var newIdx = EditorGUILayout.Popup(currentIdx, typesStr.ToArray());
-        if (newIdx != currentIdx) {
+        var popupIdx = EditorGUILayout.Popup(currentPopupIdx, typesStr.ToArray());
+        if (popupIdx < 0 || popupIdx >= typesIndices.Count) {
+            popupIdx = 0;
+        }
+
+        if (popupIdx != currentPopupIdx) {
+            var newTypeIdx = typesIndices[popupIdx];
+
             IEvent newEvent = null;
-            if (newIdx != 0) {
-                newEvent = (IEvent)Activator.CreateInstance(types[newIdx - 1]);
+            if (newTypeIdx != -1) {
+                newEvent = (IEvent)Activator.CreateInstance(types[newTypeIdx]);
             }
             src.evt = newEvent;
 
