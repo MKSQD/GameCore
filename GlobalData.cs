@@ -45,6 +45,19 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 
     public static bool HasInstance => instance != null;
 
+    public static AsyncOperationHandle<T> Load() {
+        var op = Addressables.LoadAssetAsync<T>(Address);
+        op.Completed += ctx => {
+            instance = ctx.Result;
+#if UNITY_EDITOR
+            if (ctx.Status == AsyncOperationStatus.Failed) {
+                instance = CreateAsset();
+            }
+#endif
+        };
+        return op;
+    }
+
 #if UNITY_EDITOR
     static T CreateAsset() {
         if (File.Exists($"{Application.dataPath}/GlobalData/{AssetName}")) {
@@ -68,17 +81,4 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
         return newInstance;
     }
 #endif
-
-    public static AsyncOperationHandle<T> LoadInstance() {
-        var op = Addressables.LoadAssetAsync<T>(Address);
-        op.Completed += ctx => {
-            instance = ctx.Result;
-#if UNITY_EDITOR
-            if (ctx.Status == AsyncOperationStatus.Failed) {
-                instance = CreateAsset();
-            }
-#endif
-        };
-        return op;
-    }
 }
