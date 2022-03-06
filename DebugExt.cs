@@ -230,7 +230,7 @@ public class DebugExt : MonoBehaviour {
     }
 
 #if UNITY_EDITOR
-    async void OnDrawGizmos() {
+    void OnDrawGizmos() {
         _lines2.Clear();
         _strings2.Clear();
         _wireSpheres2.Clear();
@@ -239,7 +239,7 @@ public class DebugExt : MonoBehaviour {
         foreach (var data in _lines) {
             Gizmos.color = data.color;
             Gizmos.DrawLine(data.from, data.to);
-            if (Time.time < data.removeTime) {
+            if (!paused && Time.time < data.removeTime) {
                 _lines2.Add(data);
             }
         }
@@ -248,7 +248,7 @@ public class DebugExt : MonoBehaviour {
         foreach (var data in _strings) {
             style.normal.textColor = data.color;
             Handles.Label(data.pos, data.text, style);
-            if (Time.time < data.removeTime) {
+            if (!paused && Time.time < data.removeTime) {
                 _strings2.Add(data);
             }
         }
@@ -256,7 +256,7 @@ public class DebugExt : MonoBehaviour {
         foreach (var data in _wireSpheres) {
             Gizmos.color = data.color;
             Gizmos.DrawWireSphere(data.pos, data.radius);
-            if (Time.time < data.removeTime) {
+            if (!paused && Time.time < data.removeTime) {
                 _wireSpheres2.Add(data);
             }
         }
@@ -286,7 +286,7 @@ public class DebugExt : MonoBehaviour {
                 Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, data.radius);
             }
 
-            if (Time.time < data.removeTime) {
+            if (!paused && Time.time < data.removeTime) {
                 _wireCapsules2.Add(data);
             }
         }
