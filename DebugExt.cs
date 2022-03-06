@@ -4,12 +4,12 @@ using UnityEditor;
 using UnityEngine;
 
 public class DebugExt : MonoBehaviour {
-    public class LineData {
+    struct LineData {
         public Vector3 from, to;
         public Color color;
         public float removeTime;
     }
-    public class StringData {
+    struct StringData {
         public Vector3 pos;
         public string text;
         public Color color;
@@ -21,10 +21,17 @@ public class DebugExt : MonoBehaviour {
         public Color color;
         public float removeTime;
     }
+    struct WireCapsuleData {
+        public Vector3 pos0, pos1;
+        public float radius;
+        public Color color;
+        public float removeTime;
+    }
 
-    List<LineData> lines = new List<LineData>(), lines2 = new List<LineData>();
-    List<StringData> strings = new List<StringData>(), strings2 = new List<StringData>();
-    List<WireSphereData> wireSpheres = new List<WireSphereData>(), wireSpheres2 = new List<WireSphereData>();
+    List<LineData> _lines = new(), _lines2 = new();
+    List<StringData> _strings = new(), _strings2 = new();
+    List<WireSphereData> _wireSpheres = new(), _wireSpheres2 = new();
+    List<WireCapsuleData> _wireCapsules = new(), _wireCapsules2 = new();
 
     static DebugExt instance;
     public static DebugExt Instance {
@@ -66,7 +73,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawRect(Vector3 point, Vector3 normal, Color color, float duration = 0) {
         EnsureInstance();
-        if (instance.lines.Count > 300)
+        if (instance._lines.Count > 300)
             return;
 
         var p0 = point + Vector3.Cross(normal, new Vector3(1, 0, 1));
@@ -84,7 +91,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawLine(Vector3 from, Vector3 to) {
         EnsureInstance();
-        if (instance.lines.Count > 300)
+        if (instance._lines.Count > 300)
             return;
 
         DrawLineImpl(from, to, Color.green, 0);
@@ -92,7 +99,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawLine(Vector3 from, Vector3 to, Color color) {
         EnsureInstance();
-        if (instance.lines.Count > 300)
+        if (instance._lines.Count > 300)
             return;
 
         DrawLineImpl(from, to, color, 0);
@@ -100,14 +107,14 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawLine(Vector3 from, Vector3 to, Color color, float duration) {
         EnsureInstance();
-        if (instance.lines.Count > 300)
+        if (instance._lines.Count > 300)
             return;
 
         DrawLineImpl(from, to, color, duration);
     }
 
     static void DrawLineImpl(Vector3 from, Vector3 to, Color color, float duration) {
-        instance.lines.Add(new LineData() {
+        instance._lines.Add(new LineData() {
             from = from,
             to = to,
             color = color,
@@ -119,7 +126,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawText(Vector3 pos, string text) {
         EnsureInstance();
-        if (instance.strings.Count > 100)
+        if (instance._strings.Count > 100)
             return;
 
         DrawTextImpl(pos, text, Color.green, 0);
@@ -127,7 +134,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawText(Vector3 pos, string text, Color color) {
         EnsureInstance();
-        if (instance.strings.Count > 100)
+        if (instance._strings.Count > 100)
             return;
 
         DrawTextImpl(pos, text, color, 0);
@@ -135,14 +142,14 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawText(Vector3 pos, string text, Color color, float duration) {
         EnsureInstance();
-        if (instance.strings.Count > 100)
+        if (instance._strings.Count > 100)
             return;
 
         DrawTextImpl(pos, text, color, duration);
     }
 
-    public static void DrawTextImpl(Vector3 pos, string text, Color color, float duration) {
-        instance.strings.Add(new StringData() {
+    static void DrawTextImpl(Vector3 pos, string text, Color color, float duration) {
+        instance._strings.Add(new StringData() {
             text = text,
             color = color,
             pos = pos,
@@ -154,10 +161,10 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawWireSphere(Vector3 pos, float radius, Color? color = null, float duration = 0) {
         EnsureInstance();
-        if (instance.wireSpheres.Count > 200)
+        if (instance._wireSpheres.Count > 200)
             return;
 
-        instance.wireSpheres.Add(new WireSphereData() {
+        instance._wireSpheres.Add(new WireSphereData() {
             color = color ?? Color.green,
             radius = radius,
             pos = pos,
@@ -168,11 +175,13 @@ public class DebugExt : MonoBehaviour {
 
 
     public static void DrawWireCapsule(Vector3 pos0, Vector3 pos1, float radius, Color? color = null, float duration = 0) {
-        var dist = 1 / (0.1f + (pos0 - pos1).magnitude * 2);
-        for (float f = 0; f < 1; f += dist) {
-            var p = Vector3.Lerp(pos0, pos1, f);
-            DrawWireSphere(p, radius, color, duration);
-        }
+        instance._wireCapsules.Add(new WireCapsuleData() {
+            color = color ?? Color.green,
+            radius = radius,
+            pos0 = pos0,
+            pos1 = pos1,
+            removeTime = Time.time + duration
+        });
     }
 
 
@@ -221,40 +230,72 @@ public class DebugExt : MonoBehaviour {
     }
 
 #if UNITY_EDITOR
-    void OnDrawGizmos() {
-        lines2.Clear();
-        strings2.Clear();
-        wireSpheres2.Clear();
+    async void OnDrawGizmos() {
+        _lines2.Clear();
+        _strings2.Clear();
+        _wireSpheres2.Clear();
+        _wireCapsules2.Clear();
 
-        foreach (var data in lines) {
+        foreach (var data in _lines) {
             Gizmos.color = data.color;
             Gizmos.DrawLine(data.from, data.to);
             if (Time.time < data.removeTime) {
-                lines2.Add(data);
+                _lines2.Add(data);
             }
         }
 
         GUIStyle style = new GUIStyle();
-        foreach (var data in strings) {
+        foreach (var data in _strings) {
             style.normal.textColor = data.color;
             Handles.Label(data.pos, data.text, style);
             if (Time.time < data.removeTime) {
-                strings2.Add(data);
+                _strings2.Add(data);
             }
         }
 
-        foreach (var data in wireSpheres) {
+        foreach (var data in _wireSpheres) {
             Gizmos.color = data.color;
             Gizmos.DrawWireSphere(data.pos, data.radius);
             if (Time.time < data.removeTime) {
-                wireSpheres2.Add(data);
+                _wireSpheres2.Add(data);
+            }
+        }
+
+        Handles.zTest = UnityEngine.Rendering.CompareFunction.LessEqual;
+        foreach (var data in _wireCapsules) {
+            var diff = data.pos1 - data.pos0;
+
+            Handles.color = data.color;
+
+            Matrix4x4 angleMatrix = Matrix4x4.TRS(data.pos0 + diff * 0.5f, Quaternion.FromToRotation(Vector3.up, diff), Handles.matrix.lossyScale);
+            using (new Handles.DrawingScope(angleMatrix)) {
+                var pointOffset = diff.magnitude / 2;
+
+                //draw sideways
+                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.left, Vector3.back, -180, data.radius);
+                Handles.DrawLine(new Vector3(0, pointOffset, -data.radius), new Vector3(0, -pointOffset, -data.radius));
+                Handles.DrawLine(new Vector3(0, pointOffset, data.radius), new Vector3(0, -pointOffset, data.radius));
+                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.left, Vector3.back, 180, data.radius);
+                //draw frontways
+                Handles.DrawWireArc(Vector3.up * pointOffset, Vector3.back, Vector3.left, 180, data.radius);
+                Handles.DrawLine(new Vector3(-data.radius, pointOffset, 0), new Vector3(-data.radius, -pointOffset, 0));
+                Handles.DrawLine(new Vector3(data.radius, pointOffset, 0), new Vector3(data.radius, -pointOffset, 0));
+                Handles.DrawWireArc(Vector3.down * pointOffset, Vector3.back, Vector3.left, -180, data.radius);
+                //draw center
+                Handles.DrawWireDisc(Vector3.up * pointOffset, Vector3.up, data.radius);
+                Handles.DrawWireDisc(Vector3.down * pointOffset, Vector3.up, data.radius);
+            }
+
+            if (Time.time < data.removeTime) {
+                _wireCapsules2.Add(data);
             }
         }
 
         if (!paused) {
-            (lines, lines2) = (lines2, lines);
-            (strings, strings2) = (strings2, strings);
-            (wireSpheres, wireSpheres2) = (wireSpheres2, wireSpheres);
+            (_lines, _lines2) = (_lines2, _lines);
+            (_strings, _strings2) = (_strings2, _strings);
+            (_wireSpheres, _wireSpheres2) = (_wireSpheres2, _wireSpheres);
+            (_wireCapsules, _wireCapsules2) = (_wireCapsules2, _wireCapsules);
         }
     }
 #endif
