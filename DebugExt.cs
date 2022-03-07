@@ -175,6 +175,10 @@ public class DebugExt : MonoBehaviour {
 
 
     public static void DrawWireCapsule(Vector3 pos0, Vector3 pos1, float radius, Color? color = null, float duration = 0) {
+        EnsureInstance();
+        if (instance._wireCapsules.Count > 50)
+            return;
+
         instance._wireCapsules.Add(new WireCapsuleData() {
             color = color ?? Color.green,
             radius = radius,
