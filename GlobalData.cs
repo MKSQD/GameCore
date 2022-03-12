@@ -17,12 +17,12 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
     public static string AssetName => $"{typeof(T).Name}.asset";
     public static string AssetPath => $"Assets/GlobalData/{AssetName}";
 
-    static T instance;
+    static T s_instance;
 
     public static T Instance {
         get {
 #if UNITY_EDITOR
-            if (instance == null) {
+            if (s_instance == null) {
                 if (Application.isPlaying) {
                     Debug.LogError($"Call {typeof(T).Name}.SetupInstance() in code to setup this GlobalData type for runtime access");
                     return null;
@@ -33,25 +33,25 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
                     Directory.CreateDirectory(dirPath);
                 }
 
-                instance = AssetDatabase.LoadAssetAtPath<T>(AssetPath);
-                if (instance == null) {
-                    instance = CreateAsset();
+                s_instance = AssetDatabase.LoadAssetAtPath<T>(AssetPath);
+                if (s_instance == null) {
+                    s_instance = CreateAsset();
                 }
             }
 #endif
-            return instance;
+            return s_instance;
         }
     }
 
-    public static bool HasInstance => instance != null;
+    public static bool HasInstance => s_instance != null;
 
     public static AsyncOperationHandle<T> Load() {
         var op = Addressables.LoadAssetAsync<T>(Address);
         op.Completed += ctx => {
-            instance = ctx.Result;
+            s_instance = ctx.Result;
 #if UNITY_EDITOR
             if (ctx.Status == AsyncOperationStatus.Failed) {
-                instance = CreateAsset();
+                s_instance = CreateAsset();
             }
 #endif
         };

@@ -126,29 +126,23 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawText(Vector3 pos, string text) {
         EnsureInstance();
-        if (instance._strings.Count > 100)
-            return;
-
         DrawTextImpl(pos, text, Color.green, 0);
     }
 
     public static void DrawText(Vector3 pos, string text, Color color) {
         EnsureInstance();
-        if (instance._strings.Count > 100)
-            return;
-
         DrawTextImpl(pos, text, color, 0);
     }
 
     public static void DrawText(Vector3 pos, string text, Color color, float duration) {
         EnsureInstance();
-        if (instance._strings.Count > 100)
-            return;
-
         DrawTextImpl(pos, text, color, duration);
     }
 
     static void DrawTextImpl(Vector3 pos, string text, Color color, float duration) {
+        if (instance._strings.Count > 1000)
+            return;
+
         instance._strings.Add(new StringData() {
             text = text,
             color = color,
@@ -176,7 +170,7 @@ public class DebugExt : MonoBehaviour {
 
     public static void DrawWireCapsule(Vector3 pos0, Vector3 pos1, float radius, Color? color = null, float duration = 0) {
         EnsureInstance();
-        if (instance._wireCapsules.Count > 50)
+        if (instance._wireCapsules.Count > 200)
             return;
 
         instance._wireCapsules.Add(new WireCapsuleData() {
