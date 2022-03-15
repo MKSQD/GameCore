@@ -2,20 +2,22 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class EventHub<T> where T : IEvent {
-    static List<Action<T>> listeners = new List<Action<T>>();
+public interface IEvent { }
+
+public static class EventHub<T> where T : struct, IEvent {
+    static List<Action<T>> s_listeners = new List<Action<T>>();
 
     public static void AddListener(Action<T> listener) {
-        listeners.Add(listener);
+        s_listeners.Add(listener);
     }
 
     public static void RemoveListener(Action<T> listener) {
-        listeners.Remove(listener);
+        s_listeners.Remove(listener);
     }
 
     public static void EmitDefault() {
-        for (int i = 0; i < listeners.Count; ++i) {
-            var listener = listeners[i];
+        for (int i = 0; i < s_listeners.Count; ++i) {
+            var listener = s_listeners[i];
             try {
                 listener(default);
             } catch (Exception e) {
@@ -25,8 +27,8 @@ public static class EventHub<T> where T : IEvent {
     }
 
     public static void Emit(T evt) {
-        for (int i = 0; i < listeners.Count; ++i) {
-            var listener = listeners[i];
+        for (int i = 0; i < s_listeners.Count; ++i) {
+            var listener = s_listeners[i];
             try {
                 listener(evt);
             } catch (Exception e) {
