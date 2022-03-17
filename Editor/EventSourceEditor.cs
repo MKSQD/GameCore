@@ -19,9 +19,6 @@ public class EventSourceEditor : Editor {
         var currentPopupIdx = 0;
         var currentType = src.evt?.GetType();
         for (int i = 0; i < types.Count; ++i) {
-            if (types[i].GetConstructor(Type.EmptyTypes) == null)
-                continue; // This event requires ctor arguments and can't be assigned via editor
-
             if (types[i] == currentType) {
                 currentPopupIdx = typesIndices.Count;
             }
