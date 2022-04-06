@@ -27,7 +27,7 @@ public class RuntimeSet<T> : RuntimeSet where T : Component {
     public T Random {
         get {
             if (Items.Count == 0)
-                throw new Exception("empty RuntimeSet");
+                return null;
 
             return Items[UnityEngine.Random.Range(0, Items.Count)];
         }
@@ -47,6 +47,7 @@ public class RuntimeSet<T> : RuntimeSet where T : Component {
         if (component == null)
             throw new Exception($"{gameObject} missing component {typeof(T).FullName}");
 
+        Debug.Log(component);
         Items.Add(component);
     }
     public override void Remove(GameObject gameObject) => Items.Remove(gameObject.GetComponent<T>());
