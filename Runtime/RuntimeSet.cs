@@ -47,7 +47,6 @@ public class RuntimeSet<T> : RuntimeSet where T : Component {
         if (component == null)
             throw new Exception($"{gameObject} missing component {typeof(T).FullName}");
 
-        Debug.Log(component);
         Items.Add(component);
     }
     public override void Remove(GameObject gameObject) => Items.Remove(gameObject.GetComponent<T>());
