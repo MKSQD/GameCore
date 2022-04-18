@@ -20,7 +20,29 @@ namespace GameCore {
 
             EditorGUI.BeginProperty(position, label, property);
 
-            if (property.managedReferenceValue == null) {
+            if (SerializationUtility.HasManagedReferencesWithMissingTypes(property.serializedObject.targetObject)) {
+                EditorGUI.LabelField(new Rect(position.x, position.y, position.width - 80, position.height), new GUIContent(label.text + ": "));
+                position.x += 80;
+                position.width -= 80;
+
+                if (GUI.Button(position, "missing types: choose new type")) {
+                    void handleItemClicked(object parameter) {
+                        Debug.Log("TODO move over modified properties");
+
+                        SerializationUtility.ClearAllManagedReferencesWithMissingTypes(property.serializedObject.targetObject);
+
+                        property.managedReferenceValue = Activator.CreateInstance((Type)parameter);
+                        property.serializedObject.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(property.serializedObject.targetObject);
+                    }
+
+                    GenericMenu menu = new();
+                    foreach (var impl in _implementations) {
+                        menu.AddItem(new GUIContent(impl.FullName), false, handleItemClicked, impl);
+                    }
+                    menu.DropDown(position);
+                }
+            } else if (property.managedReferenceValue == null) {
                 EditorGUI.LabelField(new Rect(position.x, position.y, position.width - 80, position.height), new GUIContent(label.text + ": "));
                 position.x += 80;
                 position.width -= 80;
@@ -29,6 +51,7 @@ namespace GameCore {
                     void handleItemClicked(object parameter) {
                         property.managedReferenceValue = Activator.CreateInstance((Type)parameter);
                         property.serializedObject.ApplyModifiedProperties();
+                        EditorUtility.SetDirty(property.serializedObject.targetObject);
                     }
 
                     GenericMenu menu = new();
@@ -38,7 +61,7 @@ namespace GameCore {
                     menu.DropDown(position);
                 }
             } else {
-                EditorGUI.PropertyField(position, property, new GUIContent(label.text + ": " + property.managedReferenceValue.GetType()), true);
+                EditorGUI.PropertyField(position, property, new GUIContent(label.text + ": " + property.managedReferenceValue.GetType().Name), true);
             }
 
             EditorGUI.EndProperty();
