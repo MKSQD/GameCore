@@ -30,6 +30,24 @@ void OnDeath(DeathEvent evt) { ... }
 EventHub<DeathEvent>.Emit(new DeathEvent(...));
 ```
 
+## RuntimeSet and RuntimeSetEntity
+RuntimeSetEntity is a MonoBehaviour that adds and removes a GameObject to a RuntimeSet. RuntimeSet is a generic ScriptableObject set of Components, with TransformRuntimeSet being provided by default.
+
+
+## SelectImplementation
+In combination with SerializeReference this allows for lists of derived objects.
+
+```cs
+public interface IEntry {}
+
+public class MyList : ScriptableObject {
+    [SerializableReference]
+    [SelectImplementation(typeof(IEntry))]
+    public IEntry[] Entries;
+}
+...
+
+
 ## GlobalData
 Very simple and convinient global ScriptableObject singleton system.
 
@@ -47,7 +65,7 @@ void Start() {
 }
 
 IEnumerator LoadGame() {
-    yield return SomeSystemOrData.LoadInstance(); // Load data via Addressables
+    yield return SomeSystemOrData.Load(); // Load data via Addressables
     
     ...
 
