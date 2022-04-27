@@ -51,7 +51,7 @@ public class RuntimeSet<T> : RuntimeSet where T : Component {
     }
     public override void Remove(GameObject gameObject) => Items.Remove(gameObject.GetComponent<T>());
 
-    void OnEnable() {
+    protected void OnEnable() {
         Items.Clear();
     }
 }

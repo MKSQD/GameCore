@@ -4,11 +4,11 @@ using UnityEngine;
 public class RuntimeSetEntity : MonoBehaviour {
     public RuntimeSet Set;
 
-    void OnEnable() => Set.Add(gameObject);
-    void OnDisable() => Set.Remove(gameObject);
+    protected void OnEnable() => Set.Add(gameObject);
+    protected void OnDisable() => Set.Remove(gameObject);
 
 #if UNITY_EDITOR
-    void OnDrawGizmos() {
+    protected void OnDrawGizmos() {
         if (Set != null) {
             Set.DrawGizmos(gameObject);
         }
