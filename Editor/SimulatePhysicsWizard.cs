@@ -5,7 +5,7 @@ using Unity.EditorCoroutines.Editor;
 using UnityEditor;
 using UnityEngine;
 
-public class WizardSimulatePhysics : ScriptableWizard {
+public class SimulatePhysicsWizard : ScriptableWizard {
     struct SimulatedBody {
         public readonly Rigidbody Rigidbody;
         public readonly bool IsSelected;
@@ -47,7 +47,7 @@ public class WizardSimulatePhysics : ScriptableWizard {
 
     [MenuItem("Edit/Simulate Physics For Selected #G", false, 142)]
     static void CreateWizard() {
-        ScriptableWizard.DisplayWizard<WizardSimulatePhysics>("Simulate Physics For Selected", "Apply");
+        ScriptableWizard.DisplayWizard<SimulatePhysicsWizard>("Simulate Physics For Selected", "Apply");
     }
 
     [MenuItem("Edit/Simulate Physics For Selected #G", true)]

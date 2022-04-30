@@ -10,13 +10,12 @@ Requires the _Addressables_ and _Editor Coroutines_ packages!
 
 
 ## Event
-Very simple and convinient global, class-based event system. The system is great to decouple UI from logic. 
+Very simple and convinient global, struct-based event system. The system is great to decouple UI from logic. 
 
 ```cs
-public class MyEvent : IEvent {}
-public class DeathEvent : IEvent {
+public struct MyEvent : IEvent {}
+public struct DeathEvent : IEvent {
     public Actor Player;
-
     public DeathEvent(Actor player) {
         Player = player;
     }

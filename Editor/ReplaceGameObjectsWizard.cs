@@ -1,13 +1,13 @@
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-public class WizardReplaceGameObjects : ScriptableWizard {
+public class ReplaceGameObjectsWizard : ScriptableWizard {
     public GameObject Prefab;
     public bool KeepOriginalNames = false;
 
     [MenuItem("Edit/Replace Selected #R", priority = 142)]
     static void CreateWizard() {
-        var replaceGameObjects = DisplayWizard<WizardReplaceGameObjects>("Replace Selected", "Replace");
+        var replaceGameObjects = DisplayWizard<ReplaceGameObjectsWizard>("Replace Selected", "Replace");
     }
 
     void OnWizardCreate() {
