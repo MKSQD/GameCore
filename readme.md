@@ -10,7 +10,7 @@ Requires the _Addressables_ and _Editor Coroutines_ packages!
 
 
 ## Event
-Very simple and convinient global, struct-based event system. The system is great to decouple UI from logic. 
+Very simple and convinient global, type based event system. The system is great to decouple UI from logic. 
 
 ```cs
 public struct MyEvent : IEvent {}
