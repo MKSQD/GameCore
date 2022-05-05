@@ -5,15 +5,10 @@ using UnityEngine;
 public interface IEvent { }
 
 public static class EventHub<T> where T : struct, IEvent {
-    static List<Action<T>> s_listeners = new List<Action<T>>();
+    static readonly List<Action<T>> s_listeners = new();
 
-    public static void AddListener(Action<T> listener) {
-        s_listeners.Add(listener);
-    }
-
-    public static void RemoveListener(Action<T> listener) {
-        s_listeners.Remove(listener);
-    }
+    public static void AddListener(Action<T> listener) => s_listeners.Add(listener);
+    public static void RemoveListener(Action<T> listener) => s_listeners.Remove(listener);
 
     public static void EmitDefault() {
         for (int i = 0; i < s_listeners.Count; ++i) {
