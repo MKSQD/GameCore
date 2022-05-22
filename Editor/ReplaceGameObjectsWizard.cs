@@ -7,11 +7,14 @@ public class ReplaceGameObjectsWizard : ScriptableWizard {
 
     [MenuItem("Edit/Replace Selected #R", priority = 142)]
     static void CreateWizard() {
-        var replaceGameObjects = DisplayWizard<ReplaceGameObjectsWizard>("Replace Selected", "Replace");
+        DisplayWizard<ReplaceGameObjectsWizard>("Replace Selected", "Replace");
     }
 
-    void OnWizardCreate() {
+    protected void OnWizardCreate() {
         foreach (var go in Selection.gameObjects) {
+            if (PrefabUtility.IsPartOfPrefabAsset(go))
+                continue;
+
             var newObject = (GameObject)PrefabUtility.InstantiatePrefab(Prefab);
             if (newObject == null) { // Maybe not a prefab?
                 newObject = Instantiate(Prefab);
