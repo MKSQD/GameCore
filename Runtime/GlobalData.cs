@@ -24,7 +24,7 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
 #if UNITY_EDITOR
             if (s_instance == null) {
                 if (Application.isPlaying) {
-                    Debug.LogError($"Call {typeof(T).Name}.SetupInstance() in code to setup this GlobalData type for runtime access");
+                    Debug.LogError($"Call {typeof(T).Name}.Load() in code to setup this GlobalData type for runtime access");
                     return null;
                 }
 
