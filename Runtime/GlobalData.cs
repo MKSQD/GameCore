@@ -13,7 +13,7 @@ public interface IGlobalData {
 }
 
 public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableObject {
-    public static string Address => $"GlobalData/{typeof(T).Name}";
+    public static string Address => $"GlobalData_{typeof(T).Name}";
     public static string AssetName => $"{typeof(T).Name}.asset";
     public static string AssetPath => $"Assets/GlobalData/{AssetName}";
 
