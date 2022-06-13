@@ -23,10 +23,8 @@ public class GlobalData<T> : ScriptableObject, IGlobalData where T : ScriptableO
         get {
 #if UNITY_EDITOR
             if (s_instance == null) {
-                if (Application.isPlaying) {
-                    Debug.LogError($"Call {typeof(T).Name}.Load() in code to setup this GlobalData type for runtime access");
-                    return null;
-                }
+                if (Application.isPlaying)
+                    return Load().WaitForCompletion();
 
                 var dirPath = $"{Application.dataPath}/GlobalData";
                 if (!Directory.Exists(dirPath)) {
