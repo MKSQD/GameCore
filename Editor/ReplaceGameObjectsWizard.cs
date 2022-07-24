@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,6 +12,7 @@ public class ReplaceGameObjectsWizard : ScriptableWizard {
     }
 
     protected void OnWizardCreate() {
+        var newSelection = new List<Object>();
         foreach (var go in Selection.gameObjects) {
             if (PrefabUtility.IsPartOfPrefabAsset(go))
                 continue;
@@ -30,7 +32,10 @@ public class ReplaceGameObjectsWizard : ScriptableWizard {
                 newObject.transform.name = go.transform.name;
             }
 
+            newSelection.Add(newObject);
+
             Undo.DestroyObjectImmediate(go);
         }
+        Selection.objects = newSelection.ToArray();
     }
 }
