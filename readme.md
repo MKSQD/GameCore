@@ -1,4 +1,6 @@
 # GameCore
+Simple things every Unity project needs. They will get you a long way on solo projects without magic, frameworks and magic.
+This is the bare minimum of decoupling required to 
 
 Requires the _Addressables_ and _Editor Coroutines_ packages!
 
@@ -32,9 +34,24 @@ EventHub<DeathEvent>.Emit(new(...));
 To trigger a global event with a UI _Button_ place a _EventSource_ component on the button, link the Buttons onClick event to _EventSource.Emit_ and setup your event in _EventSource_ inspector (your need to have an IEvent-derived class first). Then add a listener in code.
 
 
-## RuntimeSet and RuntimeSetEntity
-RuntimeSetEntity is a MonoBehaviour that adds and removes a GameObject to a RuntimeSet. RuntimeSet is a generic ScriptableObject set of Components, with TransformRuntimeSet being provided by default.
+# Service
+Simple global, type based service system. This basically allows 2 things over the usual global static reference: bind to an interface (as shown in the example) and have more consistent usage and lifetime.
 
+```cs
+public interface ISearchService : IService { }
+
+public class GoogleSearchService : ISearchService {}
+public class DuckDuckGoSearchService : ISearchService {}
+
+...
+
+ServiceHub<ISearchService>.Bind(new GoogleSearchService());
+void OnDeath(DeathEvent evt) { ... }
+
+...
+
+ServiceHub<ISearchService>.Instance
+```
 
 ## SelectImplementation
 In combination with SerializeReference this allows for lists of derived objects.
