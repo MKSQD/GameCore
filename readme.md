@@ -12,10 +12,9 @@ Requires the _Addressables_ and _Editor Coroutines_ packages!
 
 
 ## Event
-Simple global, type based event system. The system is great to decouple UI from logic. 
+Simple global, type based event system. Events must be structs and derive from IEvent.
 
 ```cs
-public struct MyEvent : IEvent {}
 public struct DeathEvent : IEvent {
     public Actor Player;
     public DeathEvent(Actor player) {
@@ -23,12 +22,39 @@ public struct DeathEvent : IEvent {
     }
 }
 
-...
-
-EventHub<DeathEvent>.AddListener(OnDeath);
-void OnDeath(DeathEvent evt) { ... }
-
 EventHub<DeathEvent>.Emit(new(...));
+```
+
+You can either have a delegate to a specific event:
+```cs
+void OnDeath(DeathEvent evt) { }
+
+EventHub<DeathEvent>.AddHandler(OnDeath);
+...
+EventHub<DeathEvent>.RemoveHandler(OnDeath);
+```
+
+or listen to all events and filter the ones you care for yourself. This is much more performant and simpler to use in case you have a lot of handlers in a single place (such as UI):
+```cs
+public class MyUI : MonoBehaviour, IEventListener {
+    void OnEnable() {
+        EventHub.AddListener(this);
+    }
+
+    void OnDisable() {
+        EventHub.RemoveListener(this);
+    }
+
+    public void OnEvent(IEvent evt) {
+        switch (evt) {
+            case DeathEvent evt2:
+                OnDeath(evt2);
+                break;
+        }
+    }
+
+    void OnDeath(DeathEvent evt) {}
+}
 ```
 
 To trigger a global event with a UI _Button_ place a _EventSource_ component on the button, link the Buttons onClick event to _EventSource.Emit_ and setup your event in _EventSource_ inspector (your need to have an IEvent-derived class first). Then add a listener in code.
@@ -46,7 +72,6 @@ public class DuckDuckGoSearchService : ISearchService {}
 ...
 
 ServiceHub<ISearchService>.Bind(new GoogleSearchService());
-void OnDeath(DeathEvent evt) { ... }
 
 ...
 
