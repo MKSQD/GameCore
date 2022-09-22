@@ -1,6 +1,5 @@
 # GameCore
-Simple things every Unity project needs. They will get you a long way on solo projects without magic, frameworks and magic.
-This is the bare minimum of decoupling required to 
+Stuff for Unity projects.
 
 Requires the _Addressables_ and _Editor Coroutines_ packages!
 
