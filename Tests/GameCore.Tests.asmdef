@@ -1,0 +1,18 @@
+{
+    "name": "GameCore.Tests",
+    "rootNamespace": "",
+    "references": [
+        "GUID:5f208f2996150a14d83221f382aa4ccd"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
