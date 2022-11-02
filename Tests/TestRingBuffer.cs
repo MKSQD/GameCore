@@ -51,6 +51,14 @@ namespace GameCore.Tests {
 
             rb.Enqueue(4);
             Assert.AreEqual(new int[] { 2, 3, 4 }, rb.ToArray());
+
+            rb.Dequeue();
+            rb.Dequeue();
+            rb.Dequeue();
+
+            rb.Enqueue(5);
+            rb.Enqueue(6);
+            Assert.AreEqual(new int[] { 5, 6 }, rb.ToArray());
         }
 
         [Test]
@@ -66,6 +74,27 @@ namespace GameCore.Tests {
 
             rb.Dequeue();
             Assert.IsTrue(!rb.IsFull);
+
+            rb.Enqueue(3);
+            Assert.IsTrue(rb.IsFull);
+
+            rb.Dequeue();
+            rb.Dequeue();
+            Assert.IsTrue(!rb.IsFull);
+
+            rb.Enqueue(4);
+            Assert.IsTrue(!rb.IsFull);
+        }
+
+        [Test]
+        public void TestPeek() {
+            var rb = new RingBuffer<int>(2);
+
+            rb.Enqueue(1);
+            Assert.AreEqual(1, rb.Peek());
+
+            rb.Enqueue(2);
+            Assert.AreEqual(1, rb.Peek());
         }
     }
 }

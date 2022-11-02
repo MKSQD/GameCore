@@ -50,8 +50,16 @@ namespace GameCore {
             _head = (_head + 1) % _buffer.Length;
             if (_head == _tail) {
                 _head = -1;
+                _tail = 0;
             }
             return result;
+        }
+
+        public T Peek() {
+            if (_head == -1)
+                throw new InvalidOperationException("empty");
+
+            return _buffer[_head];
         }
 
         public T[] ToArray() {
