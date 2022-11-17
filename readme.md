@@ -1,5 +1,5 @@
 # GameCore
-Stuff for Unity projects.
+Code patterns and tools required in absolutely every game.
 
 Requires the _Addressables_ and _Editor Coroutines_ packages!
 
@@ -76,6 +76,42 @@ ServiceHub<ISearchService>.Bind(new GoogleSearchService());
 
 ServiceHub<ISearchService>.Instance
 ```
+
+# StateMachine
+```cs
+public class MyContext {
+}
+
+public class TestState : State<MyContext> {
+    // No instance per Context, but per class
+    // Instance specific things are kept in MyContext
+    static TestState _instance;
+    static public TestState Instance {
+        get {
+            if (_instance == null) {
+                _instance = new TestState();
+            }
+            return _instance;
+        }
+    }
+
+    public override void EnterState(MyContext ctx) {
+    }
+
+    public override void ExitState(MyContext ctx) {
+    }
+
+    public override void UpdateState(MyContext ctx) {
+    }
+}
+
+...
+
+var ctx = new MyContext();
+var stateMachine = new StateMachine<MyContext>(ctx);
+stateMachine.ChangeState(TestState.Instance);
+```
+
 
 ## SelectImplementation
 In combination with SerializeReference this allows for lists of derived objects.
