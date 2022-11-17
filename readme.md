@@ -11,7 +11,7 @@ Requires the _Addressables_ and _Editor Coroutines_ packages!
 
 
 ## Event
-Simple global, type based event system. Events must be structs and derive from IEvent.
+Simple global, type based event system. Events must be classes and derive from IEvent.
 
 ```cs
 public struct DeathEvent : IEvent {
